@@ -1,0 +1,16 @@
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Data/bin/Debug/net9.0/PersonalExpenses.Data.deps.json
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Data/bin/Debug/net9.0/PersonalExpenses.Data.dll
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Data/bin/Debug/net9.0/PersonalExpenses.Data.pdb
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Data/bin/Debug/net9.0/PersonalExpenses.Entities.dll
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Data/bin/Debug/net9.0/PersonalExpenses.Entities.pdb
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Data/obj/Debug/net9.0/PersonalExpenses.Data.csproj.AssemblyReference.cache
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Data/obj/Debug/net9.0/PersonalExpenses.Data.GeneratedMSBuildEditorConfig.editorconfig
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Data/obj/Debug/net9.0/PersonalExpenses.Data.AssemblyInfoInputs.cache
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Data/obj/Debug/net9.0/PersonalExpenses.Data.AssemblyInfo.cs
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Data/obj/Debug/net9.0/PersonalExpenses.Data.csproj.CoreCompileInputs.cache
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Data/obj/Debug/net9.0/PersonalExpenses.Data.sourcelink.json
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Data/obj/Debug/net9.0/Personal.F1B1DB79.Up2Date
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Data/obj/Debug/net9.0/PersonalExpenses.Data.dll
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Data/obj/Debug/net9.0/refint/PersonalExpenses.Data.dll
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Data/obj/Debug/net9.0/PersonalExpenses.Data.pdb
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Data/obj/Debug/net9.0/ref/PersonalExpenses.Data.dll

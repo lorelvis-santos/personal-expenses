@@ -1,0 +1,12 @@
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Entities/bin/Debug/net9.0/PersonalExpenses.Entities.deps.json
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Entities/bin/Debug/net9.0/PersonalExpenses.Entities.dll
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Entities/bin/Debug/net9.0/PersonalExpenses.Entities.pdb
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Entities/obj/Debug/net9.0/PersonalExpenses.Entities.GeneratedMSBuildEditorConfig.editorconfig
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Entities/obj/Debug/net9.0/PersonalExpenses.Entities.AssemblyInfoInputs.cache
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Entities/obj/Debug/net9.0/PersonalExpenses.Entities.AssemblyInfo.cs
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Entities/obj/Debug/net9.0/PersonalExpenses.Entities.csproj.CoreCompileInputs.cache
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Entities/obj/Debug/net9.0/PersonalExpenses.Entities.sourcelink.json
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Entities/obj/Debug/net9.0/PersonalExpenses.Entities.dll
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Entities/obj/Debug/net9.0/refint/PersonalExpenses.Entities.dll
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Entities/obj/Debug/net9.0/PersonalExpenses.Entities.pdb
+/home/lorelvis/cloud/itla/p2/projects/personal-expenses/PersonalExpenses.Entities/obj/Debug/net9.0/ref/PersonalExpenses.Entities.dll
