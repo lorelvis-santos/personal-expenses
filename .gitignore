@@ -1,0 +1,19 @@
+## Ignorar carpetas de compilación
+[Bb]in/
+[Oo]bj/
+
+## Ignorar archivos de usuario de Visual Studio (configuraciones personales)
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+
+## Ignorar archivos de Visual Studio Code
+.vscode/
+
+## Ignorar archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+## Ignorar bases de datos locales o archivos de bloqueo (si aplicara)
+*.lock.json

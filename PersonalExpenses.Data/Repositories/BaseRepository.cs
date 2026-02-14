@@ -6,10 +6,10 @@ namespace PersonalExpenses.Data.Repositories;
 
 public abstract class BaseRepository<T> : IRepository<T> where T : BaseModel
 {
-    protected readonly IFileContext<T> _context;
+    protected readonly IFileContext _context;
     protected readonly string _fileName;
 
-    protected BaseRepository(IFileContext<T> context, string fileName)
+    protected BaseRepository(IFileContext context, string fileName)
     {
         _context = context;
         _fileName = fileName;
@@ -17,7 +17,7 @@ public abstract class BaseRepository<T> : IRepository<T> where T : BaseModel
 
     public List<T> GetAll()
     {
-        return _context.LoadData(_fileName);
+        return _context.LoadData<T>(_fileName);
     }
 
     public T? GetById(string id)
