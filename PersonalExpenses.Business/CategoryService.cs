@@ -24,10 +24,11 @@ public class CategoryService
             - No permitir eliminar una categoria que tenga gastos asociados
     */
 
+    public List<Category> GetAll() => _repo.GetAll();
     public Category? GetById(string id) => _repo.GetById(id);
     public bool ExistsByName(string name) => _repo.GetByName(name) != null;
 
-    public (bool Success, string Message) Create(string name, decimal budget, string? description = null)
+    public (bool Success, string Message) Create(string name,  string description, decimal budget)
     {
         // Pasamos null en currentId porque es una creación
         var validation = Validate(name, budget, description, currentId: null);
@@ -41,7 +42,7 @@ public class CategoryService
         {
             Name = name.Trim(),
             Budget = budget,
-            Description = description?.Trim()
+            Description = description.Trim()
         };
 
         bool created = _repo.Add(category);
@@ -51,7 +52,7 @@ public class CategoryService
             (false, "Error al guardar en base de datos.");
     }
 
-    public (bool Success, string Message) Update(string id, string name, decimal budget, string? description = null)
+    public (bool Success, string Message) Update(string id, string name, string description, decimal budget)
     {
         Category? category = _repo.GetById(id);
 
@@ -70,7 +71,7 @@ public class CategoryService
         // Actualizamos campos
         category.Name = name.Trim();
         category.Budget = budget;
-        category.Description = description?.Trim();
+        category.Description = description.Trim();
 
         bool updated = _repo.Update(category);
         

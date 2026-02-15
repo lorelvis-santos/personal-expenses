@@ -57,7 +57,8 @@ public abstract class BaseRepository<T> : IRepository<T> where T : BaseModel
             return false;
         }
 
-        items.Remove(itemToRemove);
+        items = [.. items.Where(item => item.Id != id)];
+
         return _context.SaveData(_fileName, items);
     }
 }

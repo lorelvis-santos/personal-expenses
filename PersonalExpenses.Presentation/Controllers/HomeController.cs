@@ -4,12 +4,11 @@ namespace PersonalExpenses.Presentation.Controllers;
 
 public class HomeController : BaseController
 {
-    // private readonly ProductController _productController;
-    // private readonly InvoiceController _invoiceController;
+    private readonly CategoryController _categoryController;
 
-    public HomeController(HomeMenu homeMenu) : base(homeMenu)
+    public HomeController(HomeMenu homeMenu, CategoryController categoryController) : base(homeMenu)
     {
-        
+        _categoryController = categoryController;
     }
 
     protected override bool HandleChoice(int choice)
@@ -35,9 +34,12 @@ public class HomeController : BaseController
                 break;
 
             case 0:
-                Console.WriteLine("Categorías...");
-                Console.ReadKey();
+                bool categoryLoop = true;
 
+                while (categoryLoop)
+                {
+                    categoryLoop = _categoryController.Execute();
+                }
 
                 break;
                 
