@@ -20,7 +20,7 @@ public abstract class BaseRepository<T> : IRepository<T> where T : BaseModel
         return _context.LoadData<T>(_fileName);
     }
 
-    public T? FindById(string id)
+    public T? GetById(string id)
     {
         List<T> items = GetAll();
         return items.FirstOrDefault(item => item.Id == id);
@@ -50,7 +50,7 @@ public abstract class BaseRepository<T> : IRepository<T> where T : BaseModel
     public bool Delete(string id)
     {
         List<T> items = GetAll();
-        T? itemToRemove = FindById(id);
+        T? itemToRemove = GetById(id);
 
         if (itemToRemove == null)
         {

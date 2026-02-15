@@ -4,7 +4,7 @@ public interface IRepository<T>
 {
     bool Add(T entity);
     List<T> GetAll();
-    T? FindById(string id);
+    T? GetById(string id);
     bool Update(T entity);
     bool Delete(string id);
 }

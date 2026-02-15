@@ -10,7 +10,7 @@ public class CategoryRepository : BaseRepository<Category>
         
     }
 
-    public Category? FindByName(string name)
+    public Category? GetByName(string name)
     {
         List<Category> categories = GetAll();
 
