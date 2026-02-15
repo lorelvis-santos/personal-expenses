@@ -8,5 +8,20 @@ public class CategoryRepository : BaseRepository<Category>
     public CategoryRepository(IFileContext context) : base(context, "categories.json")
     {
         
-    } 
+    }
+
+    public Category? FindByName(string name)
+    {
+        List<Category> categories = GetAll();
+
+        foreach (Category category in categories)
+        {
+            if (category.Name.Equals(name, StringComparison.OrdinalIgnoreCase) )
+            {
+                return category;
+            }
+        }
+
+        return null;
+    }
 }
