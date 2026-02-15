@@ -9,4 +9,9 @@ public class ExpenseRepository : BaseRepository<Expense>
     {
         
     }
+
+    public bool HasExpensesForCategory(string categoryId)
+    {
+        return GetAll().Any(expense => expense.CategoryId == categoryId);
+    }
 }

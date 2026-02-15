@@ -1,16 +1,17 @@
 using PersonalExpenses.Entities;
 using PersonalExpenses.Data.Repositories;
-using PersonalExpenses.Data;
 
 namespace PersonalExpenses.Business;
 
 public class CategoryService
 {
-    private CategoryRepository _repo;
+    private readonly CategoryRepository _repo;
+    private readonly ExpenseRepository _expenseRepo;
 
-    public CategoryService(CategoryRepository repo)
+    public CategoryService(CategoryRepository repo, ExpenseRepository expenseRepo)
     {
         _repo = repo;
+        _expenseRepo = expenseRepo;
     }
 
     /*
@@ -23,17 +24,17 @@ public class CategoryService
             - No permitir eliminar una categoria que tenga gastos asociados
     */
 
-    public Category? FindById(string id) => _repo.FindById(id);
-    public bool ExistsByName(string name) => _repo.FindByName(name) != null;
+    public Category? GetById(string id) => _repo.GetById(id);
+    public bool ExistsByName(string name) => _repo.GetByName(name) != null;
 
     public (bool Success, string Message) Create(string name, decimal budget, string? description = null)
     {
         // Pasamos null en currentId porque es una creación
-        var (Success, Message) = Validate(name, budget, description, currentId: null);
+        var validation = Validate(name, budget, description, currentId: null);
         
-        if (!Success)
+        if (!validation.Success)
         {
-            return (false, Message);
+            return (false, validation.Message);
         }
 
         Category category = new()
@@ -52,18 +53,18 @@ public class CategoryService
 
     public (bool Success, string Message) Update(string id, string name, decimal budget, string? description = null)
     {
-        Category? category = _repo.FindById(id);
+        Category? category = _repo.GetById(id);
 
         if (category == null)
         {
             return (false, "La categoría no existe.");
         }
 
-        var (Success, Message) = Validate(name, budget, description, currentId: id);
+        var validation = Validate(name, budget, description, currentId: id);
 
-        if (!Success)
+        if (!validation.Success)
         {
-            return (false, Message);
+            return (false, validation.Message);
         }
 
         // Actualizamos campos
@@ -93,7 +94,7 @@ public class CategoryService
         }
 
         // Lógica de duplicados
-        Category? categoryWithSameName = _repo.FindByName(name);
+        Category? categoryWithSameName = _repo.GetByName(name);
         
         if (categoryWithSameName != null && (currentId == null || categoryWithSameName.Id != currentId))
         {
@@ -115,5 +116,25 @@ public class CategoryService
         return (true, "Operación realizada correctamente.");
     }
 
-    
+    public (bool Success, string Message) Delete(string id)
+    {
+        Category? category = _repo.GetById(id);
+
+        if (category == null)
+        {
+            return (false, "La categoría no existe.");
+        }
+
+        // Validar que no tenga gastos asociados
+        if (_expenseRepo.HasExpensesForCategory(id))
+        {
+            return (false, $"No se puede eliminar la categoría '{category.Name}', tiene gastos registrados.");
+        }
+
+        bool deleted = _repo.Delete(id);
+
+        return deleted ? 
+            (true, $"Categoría '{category.Name}' eliminada correctamente.") :
+            (false, $"La categoría '{category.Name}' no pudo ser eliminada.");
+    }
 }
