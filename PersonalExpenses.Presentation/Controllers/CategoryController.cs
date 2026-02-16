@@ -2,6 +2,7 @@ using PersonalExpenses.Entities;
 using PersonalExpenses.Business;
 using PersonalExpenses.Presentation.Views.Categories;
 using PersonalExpenses.Presentation.Extensions;
+using PersonalExpenses.Presentation.Enums;
 
 namespace PersonalExpenses.Presentation.Controllers;
 
@@ -26,7 +27,19 @@ public class CategoryController : BaseController
 
         List<string> data = [.. _categories.Select(c => {
             decimal? remaining = _service.GetReimainingBudget(c.Id);
-            string remainingText = remaining > 0 ? $"Restante: RD{remaining:C2}" : $"ALERTA: Sobregirado por RD{remaining * -1:C2}";
+            string remainingText;
+
+            if (remaining > 0)
+            {
+                remainingText = $"Restante: RD{remaining:C2}";
+            } else if (remaining == 0) 
+            {
+                remainingText = "ALERTA: El presupuesto llegó a su límite";
+            } else
+            {
+                remainingText = $"ALERTA: Sobregirado por RD{remaining * -1:C2}";
+            }
+
             return $"Nombre: {c.Name} | Presupuesto: RD{c.Budget:C2} | {remainingText}";
         })];
 
@@ -45,8 +58,10 @@ public class CategoryController : BaseController
             return false;
         }
 
+        var specialKey = (SpecialKeys)choice;
+
         // Caso especial: Insercion
-        if (choice == -100)
+        if (specialKey == SpecialKeys.Insert)
         {
             CreateCategory();
             return true;
