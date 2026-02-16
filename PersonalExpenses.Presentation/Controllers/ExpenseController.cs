@@ -3,6 +3,7 @@ using PersonalExpenses.Business;
 using PersonalExpenses.Presentation.Views.Categories;
 using PersonalExpenses.Presentation.Views.Expenses;
 using PersonalExpenses.Presentation.Extensions;
+using PersonalExpenses.Presentation.Enums;
 
 namespace PersonalExpenses.Presentation.Controllers;
 
@@ -13,6 +14,7 @@ public class ExpenseController : BaseController
     private readonly CategoryMenu _categoryMenu;
     private readonly ExpenseService _service;
     private readonly CategoryService _categoryService;
+    private List<Category> _filters = [];
     private List<Expense> _expenses;
 
     public ExpenseController(ExpenseMenu menu, ExpenseSubMenu subMenu, CategoryMenu categoryMenu, ExpenseService service, CategoryService categoryService) : base(menu)
@@ -29,7 +31,10 @@ public class ExpenseController : BaseController
     {
         List<Category> _categories = _categoryService.GetAll();
         Category? category;
-        _expenses = _service.GetAllReversed();
+
+        _expenses = _filters.Count > 0 ?
+            _service.FilterByCategories([.. _filters.Select(c => c.Id)]) :
+            _service.GetAllReversed();
 
         List<string> data = [.. _expenses.Select(p => {
             category = _categories.FirstOrDefault(c => c.Id == p.CategoryId);
@@ -39,7 +44,11 @@ public class ExpenseController : BaseController
         int rowsPerPage = 10;
         _menu.Pages = data.ToPages(rowsPerPage);
         _menu.RowsPerPage = rowsPerPage;
-        _menu.Tips = ["Pulsa [I] para agregar un nuevo gasto"];
+        _menu.Tips = [
+            "Pulsa [I] para agregar un nuevo gasto",
+            "Pulsa [F] para filtrar por categorías",
+            "Pulsa [L] para limpiar los filtros"
+        ];
 
         return base.Execute();
     }
@@ -51,10 +60,24 @@ public class ExpenseController : BaseController
             return false;
         }
 
+        var specialKey = (SpecialKeys)choice;
+
         // Caso especial: Insercion
-        if (choice == -100)
+        if (specialKey == SpecialKeys.Insert)
         {
             CreateExpense();
+            return true;
+        }
+
+        if (specialKey == SpecialKeys.SetFilters)
+        {
+            SetFilters();
+            return true;
+        }
+
+        if (specialKey == SpecialKeys.ClearFilters)
+        {
+            _filters = [];
             return true;
         }
 
@@ -193,6 +216,43 @@ public class ExpenseController : BaseController
         return result.Success;
     }
 
+    private bool SetFilters()
+    {
+        bool filtersLoop = true;
+        List<string>? tips = null;
+
+        while (filtersLoop)
+        {
+            if (_filters.Count > 0)
+            {
+                tips = new(
+                    [
+                        "Filtros actuales",
+                        .. _filters.Select(c => $"- Nombre: {c.Name}"), 
+                        "", 
+                        "Presiona [ESC] para regresar"
+                    ]
+                );
+            }
+
+            Category? category = SelectCategory(tips?.ToArray() ?? null);
+
+            if (category == null)
+            {
+                filtersLoop = false;
+                break;
+            }
+
+            if (_filters.Contains(category))
+            {
+                _filters.Remove(category);
+            }
+
+            _filters.Add(category);
+        }
+
+        return true;
+    }
 
     private Category? SelectCategory(string[]? tips = null)
     {

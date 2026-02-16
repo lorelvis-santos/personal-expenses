@@ -21,6 +21,10 @@ public class ExpenseService
         expenses.Reverse();
         return expenses;
     }
+    public List<Expense> FilterByCategories(List<string> categoriesId)
+    {
+        return GetAllReversed().FindAll(e => categoriesId.Contains(e.CategoryId));
+    }
     public Expense? GetById(string id) => _repo.GetById(id);
 
     public (bool Success, string Message) Create(decimal amount, string description, string categoryId)
@@ -98,6 +102,17 @@ public class ExpenseService
 
     public (bool Success, string Message) Delete(string id)
     {
-        throw new NotImplementedException();
+        Expense? expense = _repo.GetById(id);
+
+        if (expense == null)
+        {
+            return (false, "La categoría no existe.");
+        }
+
+        bool deleted = _repo.Delete(id);
+
+        return deleted ? 
+            (true, $"Gasto eliminado correctamente.") :
+            (false, $"El gasto no pudo ser eliminado.");
     }
 }

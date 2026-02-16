@@ -1,3 +1,4 @@
+using PersonalExpenses.Presentation.Enums;
 using PersonalExpenses.Presentation.Extensions;
 
 namespace PersonalExpenses.Presentation.Core;
@@ -122,12 +123,22 @@ public static class Menu
                 case ConsoleKey.I: // Insertar
                     if (!specialKeys)
                         break;
-                    return -100;
+                    return (int)SpecialKeys.Insert;
 
-                case ConsoleKey.E: // Emitir factura
+                case ConsoleKey.E: // Aplicar cambios / guardar
                     if (!specialKeys)
                         break;
-                    return -101;
+                    return (int)SpecialKeys.Save;
+
+                case ConsoleKey.F: // Aplicar filtros
+                    if (!specialKeys)
+                        break;
+                    return (int)SpecialKeys.SetFilters;
+
+                case ConsoleKey.L: // Limpiar filtros
+                    if (!specialKeys)
+                        break;
+                    return (int)SpecialKeys.ClearFilters;
             }
         }
 
@@ -204,8 +215,8 @@ public static class Menu
         if (showHelp)
         {
             Console.WriteLine();
-            Console.WriteLine("\tPresiona [ENTER] para seleccionar una opción.");
-            Console.WriteLine("\tPresiona [W,A,S,D] para moverte.");
+            Console.WriteLine("\tPresiona [W,A,S,D o FLECHAS] para moverte.");
+            Console.WriteLine("\tPresiona [ESPACIO o ENTER] para seleccionar una opción.");
             Console.WriteLine("\tPresiona [ESC] para salir.");
             Console.WriteLine("\tPresiona [H] para mostrar/ocultar este menú.");
         }
