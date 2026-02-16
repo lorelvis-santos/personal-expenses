@@ -5,10 +5,12 @@ namespace PersonalExpenses.Presentation.Controllers;
 public class HomeController : BaseController
 {
     private readonly CategoryController _categoryController;
+    private readonly ExpenseController _expenseController;
 
-    public HomeController(HomeMenu homeMenu, CategoryController categoryController) : base(homeMenu)
+    public HomeController(HomeMenu homeMenu, CategoryController categoryController, ExpenseController expenseController) : base(homeMenu)
     {
         _categoryController = categoryController;
+        _expenseController = expenseController;
     }
 
     protected override bool HandleChoice(int choice)
@@ -44,8 +46,12 @@ public class HomeController : BaseController
                 break;
                 
             case 1:
-                Console.WriteLine("Gastos...");
-                Console.ReadKey();
+                bool expenseLoop = true;
+
+                while (expenseLoop)
+                {
+                    expenseLoop = _expenseController.Execute();
+                }
 
                 break;
 

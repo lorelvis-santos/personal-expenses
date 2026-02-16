@@ -1,6 +1,6 @@
 using PersonalExpenses.Entities;
 using PersonalExpenses.Business;
-using PersonalExpenses.Presentation.Views;
+using PersonalExpenses.Presentation.Views.Categories;
 using PersonalExpenses.Presentation.Extensions;
 
 namespace PersonalExpenses.Presentation.Controllers;
@@ -24,7 +24,11 @@ public class CategoryController : BaseController
     {
         _categories = _service.GetAll();
 
-        List<string> data = [.. _categories.Select(p => $"Nombre: {p.Name} | Presupuesto: RD{p.Budget:C2}" ?? "N/A")];
+        List<string> data = [.. _categories.Select(c => {
+            decimal? remaining = _service.GetReimainingBudget(c.Id);
+            string remainingText = remaining > 0 ? $"Restante: RD{remaining:C2}" : $"ALERTA: Sobregirado por RD{remaining * -1:C2}";
+            return $"Nombre: {c.Name} | Presupuesto: RD{c.Budget:C2} | {remainingText}";
+        })];
 
         int rowsPerPage = 10;
         _menu.Pages = data.ToPages(rowsPerPage);
@@ -80,7 +84,7 @@ public class CategoryController : BaseController
     {
         Console.Clear();
         Console.WriteLine();
-        Console.WriteLine("\tPanel de administración");
+        Console.WriteLine("\tGestor de Gastos Personales");
         Console.WriteLine();
         Console.WriteLine("\tNueva categoría");
         Console.WriteLine();
@@ -175,63 +179,4 @@ public class CategoryController : BaseController
         return input?.Trim() ?? "";
     }
     // ---
-
-    public Category? Select()
-    {
-        // Obtenemos los productos
-        List<Category> categories = _service.GetAll();
-        if (categories.Count == 0)
-        {
-            return null;
-        }
-
-        // Mostramos los productos con paginacion
-        List<string> data = [.. categories.Select(p => $"Nombre: {p.Name}")];
-
-        int rowsPerPage = 10;
-        _menu.Pages = data.ToPages(rowsPerPage);
-        _menu.RowsPerPage = rowsPerPage;
-        _menu.Tips = ["Presiona [ESC] para cancelar"];
-        _menu.Subtitle = "Selecciona una categoría";
-
-        // Mostramos la vista
-        int choice = _menu.Show();
-
-        // Retornamos el objeto si la elección es válida
-        if (choice == -1)
-        {
-            return null; // El usuario canceló
-        }
-        
-        return categories[choice];
-    }
-
-    public Category? Select(List<Category> categories)
-    {
-        // Obtenemos los productos
-        if (categories.Count <= 0)
-        {
-            return null;
-        }
-
-        // Mostramos los productos con paginacion
-        List<string> data = [.. categories.Select(p => $"Nombre: {p.Name}")];
-
-        int rowsPerPage = 10;
-        _menu.Pages = data.ToPages(rowsPerPage);
-        _menu.RowsPerPage = rowsPerPage;
-        _menu.Tips = ["Presiona [ESC] para cancelar"];
-        _menu.Subtitle = "Selecciona un producto";
-
-        // Mostramos la vista
-        int choice = _menu.Show();
-
-        // Retornamos el objeto si la elección es válida
-        if (choice == -1)
-        {
-            return null; // El usuario canceló
-        }
-        
-        return categories[choice];
-    }
 }

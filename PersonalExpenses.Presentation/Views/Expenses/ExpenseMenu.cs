@@ -1,14 +1,14 @@
 using PersonalExpenses.Presentation.Core;
 
-namespace PersonalExpenses.Presentation.Views.Categories;
+namespace PersonalExpenses.Presentation.Views.Expenses;
 
-public class CategoryMenu : IView
+public class ExpenseMenu : IView
 {
     // Propiedades para guardar la configuración antes de llamar a Show()
     public string[][] Pages { get; set; } = [];
     public int RowsPerPage { get; set; } = 10;
     public string[]? Tips { get; set; } = null;
-    public string Subtitle { get; set; } = "¡Estás administrando las categorías!";
+    public string Subtitle { get; set; } = "¡Estás administrando tus gastos!";
 
     public int Show()
     {

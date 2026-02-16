@@ -1,10 +1,10 @@
 using PersonalExpenses.Presentation.Core;
 
-namespace PersonalExpenses.Presentation.Views.Categories;
+namespace PersonalExpenses.Presentation.Views.Expenses;
 
-public class CategorySubMenu : IView
+public class ExpenseSubMenu : IView
 {
-    public string Subtitle { get; set; } = "Selecciona una opción para la categoría";
+    public string Subtitle { get; set; } = "Selecciona una opción para el gasto";
     public int Show()
     {
         return Menu.Show(
