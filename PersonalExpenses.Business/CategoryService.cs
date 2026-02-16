@@ -28,6 +28,20 @@ public class CategoryService
     public Category? GetById(string id) => _repo.GetById(id);
     public bool ExistsByName(string name) => _repo.GetByName(name) != null;
 
+    public decimal? GetReimainingBudget(string id)
+    {
+        Category? category = _repo.GetById(id);
+
+        if (category == null)
+        {
+            return null;
+        }
+
+        decimal totalExpenses = _expenseRepo.GetAll().Where(c => c.CategoryId == id).Sum(c => c.Amount);
+
+        return category.Budget - totalExpenses;
+    }
+
     public (bool Success, string Message) Create(string name,  string description, decimal budget)
     {
         // Pasamos null en currentId porque es una creación
