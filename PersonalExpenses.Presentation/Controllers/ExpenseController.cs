@@ -12,17 +12,19 @@ public class ExpenseController : BaseController
     private readonly ExpenseMenu _menu;
     private readonly ExpenseSubMenu _subMenu;
     private readonly ExpenseFiltersMenu _expenseFiltersMenu;
+    private readonly DateFiltersMenu _dateFiltersMenu;
     private readonly CategoryMenu _categoryMenu;
     private readonly ExpenseService _service;
     private readonly CategoryService _categoryService;
     private List<Category> _filters = [];
     private List<Expense> _expenses;
 
-    public ExpenseController(ExpenseMenu menu, ExpenseSubMenu subMenu, ExpenseFiltersMenu expenseFiltersMenu, CategoryMenu categoryMenu, ExpenseService service, CategoryService categoryService) : base(menu)
+    public ExpenseController(ExpenseMenu menu, ExpenseSubMenu subMenu, ExpenseFiltersMenu expenseFiltersMenu, DateFiltersMenu dateFiltersMenu, CategoryMenu categoryMenu, ExpenseService service, CategoryService categoryService) : base(menu)
     {
         _menu = menu;
         _categoryMenu = categoryMenu;
         _expenseFiltersMenu = expenseFiltersMenu;
+        _dateFiltersMenu = dateFiltersMenu;
         _subMenu = subMenu;
         _service = service;
         _categoryService = categoryService;
@@ -247,6 +249,7 @@ public class ExpenseController : BaseController
                 SetCategoriesFilters();
                 break;
             case 1:
+                throw new NotImplementedException();
                 break;
         }
 
@@ -293,6 +296,11 @@ public class ExpenseController : BaseController
         }
 
         return true;
+    }
+
+    private bool SetDateFilters()
+    {
+        
     }
 
     private Category? SelectCategory(string[]? tips = null)
@@ -348,6 +356,26 @@ public class ExpenseController : BaseController
         } while (!optional && string.IsNullOrWhiteSpace(input));
 
         return input?.Trim() ?? "";
+    }
+
+    // Helper para pedir fechas sin que explote la app
+    private DateTime? PromptDate(string label)
+    {
+        Console.Write($"\t{label} (Enter para omitir): ");
+        string input = Console.ReadLine();
+
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            return null;
+        }
+
+        if (DateTime.TryParse(input, out DateTime result))
+        {
+            return result;
+        }
+
+        Console.WriteLine("\t>> Fecha inválida. Se ignorará este campo.");
+        return null;
     }
     // ---
 }
