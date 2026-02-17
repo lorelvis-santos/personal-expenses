@@ -300,7 +300,7 @@ public class ExpenseController : BaseController
 
     private bool SetDateFilters()
     {
-        
+        throw new NotImplementedException();
     }
 
     private Category? SelectCategory(string[]? tips = null)
