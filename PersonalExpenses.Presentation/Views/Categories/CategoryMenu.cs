@@ -8,6 +8,7 @@ public class CategoryMenu : IView
     public string[][] Pages { get; set; } = [];
     public int RowsPerPage { get; set; } = 10;
     public string[]? Tips { get; set; } = null;
+    public bool SpecialKeys { get; set; } = true;
     public string Subtitle { get; set; } = "¡Estás administrando las categorías!";
 
     public int Show()
@@ -17,7 +18,7 @@ public class CategoryMenu : IView
             Pages,
             1,
             RowsPerPage,
-            true,
+            SpecialKeys,
             Subtitle,
             Tips
         );

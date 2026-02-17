@@ -44,11 +44,22 @@ public class ExpenseController : BaseController
         int rowsPerPage = 10;
         _menu.Pages = data.ToPages(rowsPerPage);
         _menu.RowsPerPage = rowsPerPage;
+
         _menu.Tips = [
             "Pulsa [I] para agregar un nuevo gasto",
             "Pulsa [F] para filtrar por categorías",
             "Pulsa [L] para limpiar los filtros"
         ];
+
+        if (_filters.Count > 0)
+        {
+            _menu.Tips = [
+                "Filtros actuales",
+                .. _filters.Select(c => $"- Nombre: {c.Name}"),
+                "",
+                .. _menu.Tips
+            ];
+        }
 
         return base.Execute();
     }
@@ -233,6 +244,9 @@ public class ExpenseController : BaseController
                         "Presiona [ESC] para regresar"
                     ]
                 );
+            } else
+            {
+                tips = [];
             }
 
             Category? category = SelectCategory(tips?.ToArray() ?? null);
@@ -243,9 +257,10 @@ public class ExpenseController : BaseController
                 break;
             }
 
-            if (_filters.Contains(category))
+            if (_filters.FirstOrDefault(c => c.Id == category.Id) != null)
             {
-                _filters.Remove(category);
+                _filters = [.. _filters.Where(c => c.Id != category.Id)];
+                continue;
             }
 
             _filters.Add(category);
@@ -274,6 +289,7 @@ public class ExpenseController : BaseController
         _categoryMenu.Pages = data.ToPages(rowsPerPage);
         _categoryMenu.RowsPerPage = rowsPerPage;
         _categoryMenu.Tips = tips != null && tips.Length > 0 ? tips : ["Presiona [ESC] para cancelar"];
+        _categoryMenu.SpecialKeys = false;
 
         string originalSubtitle = _categoryMenu.Subtitle;
         _categoryMenu.Subtitle = "Selecciona una categoría";
@@ -281,8 +297,9 @@ public class ExpenseController : BaseController
         // Mostramos la vista
         int choice = _categoryMenu.Show();
 
-        // Colocamos el titulo original de nuevo porque esta modificando el objeto original...
+        // Colocamos los valores originales del menu
         _categoryMenu.Subtitle = originalSubtitle;
+        _categoryMenu.SpecialKeys = true;
 
         // Retornamos el objeto si la elección es válida
         if (choice == -1)
