@@ -25,6 +25,51 @@ public class ExpenseService
     {
         return GetAllReversed().FindAll(e => categoriesId.Contains(e.CategoryId));
     }
+
+    public List<Expense> ApplyFilters(List<string> categoryIds, DateTime? from, DateTime? to)
+    {
+        List<Expense> query = GetAllReversed();
+
+        if (categoryIds.Count > 0)
+        {
+            query = [.. query.Where(e => categoryIds.Contains(e.CategoryId))];
+        }
+
+        if (from.HasValue)
+        {
+            query = [.. query.Where(e => e.Date.Date >= from.Value.Date)];
+        }
+
+        if (to.HasValue)
+        {
+            query = [.. query.Where(e => e.Date.Date <= to.Value.Date)];
+        }
+
+        return query;
+    }
+
+    public (
+        decimal Total,
+        Dictionary<string, decimal> ByCategory,
+        Dictionary<string, decimal> ByMonth
+    ) GetStatistics(List<Expense> expenses, List<Category> categories)
+    {
+        decimal total = expenses.Sum(e => e.Amount);
+
+        var byCategory = expenses
+            .GroupBy(e => e.CategoryId)
+            .ToDictionary(
+                g => categories.FirstOrDefault(c => c.Id == g.Key)?.Name ?? "N/A", 
+                g => g.Sum(e => e.Amount)
+            );
+
+        var byMonth = expenses
+            .GroupBy(e => e.Date.ToString("MMMM yyyy")) // Ej: "Febrero 2026"
+            .ToDictionary(g => g.Key, g => g.Sum(e => e.Amount));
+
+        return (total, byCategory, byMonth);
+    }
+
     public Expense? GetById(string id) => _repo.GetById(id);
 
     public (bool Success, string Message) Create(decimal amount, string description, string categoryId)
