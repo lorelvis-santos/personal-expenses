@@ -5,6 +5,7 @@ namespace PersonalExpenses.Presentation.Views.Expenses;
 public class ExpenseFiltersMenu : IView
 {
     public string Subtitle { get; set; } = "Selecciona el tipo de filtrado";
+    public string[]? Tips { get; set; } = null;
     public int Show()
     {
         return Menu.Show(
@@ -13,7 +14,9 @@ public class ExpenseFiltersMenu : IView
                 "Por categoría",
                 "Por rango de fechas"
             ],
-            Subtitle
+            Subtitle,
+            false,
+            Tips
         );
     }
 }

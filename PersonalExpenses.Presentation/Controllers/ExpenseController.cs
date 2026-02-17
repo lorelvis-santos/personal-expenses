@@ -4,6 +4,7 @@ using PersonalExpenses.Presentation.Views.Categories;
 using PersonalExpenses.Presentation.Views.Expenses;
 using PersonalExpenses.Presentation.Extensions;
 using PersonalExpenses.Presentation.Enums;
+using PersonalExpenses.Presentation.Models;
 
 namespace PersonalExpenses.Presentation.Controllers;
 
@@ -16,7 +17,7 @@ public class ExpenseController : BaseController
     private readonly CategoryMenu _categoryMenu;
     private readonly ExpenseService _service;
     private readonly CategoryService _categoryService;
-    private List<Category> _filters = [];
+    private ExpenseFilterState _filterState = new();
     private List<Expense> _expenses;
 
     public ExpenseController(ExpenseMenu menu, ExpenseSubMenu subMenu, ExpenseFiltersMenu expenseFiltersMenu, DateFiltersMenu dateFiltersMenu, CategoryMenu categoryMenu, ExpenseService service, CategoryService categoryService) : base(menu)
@@ -36,9 +37,11 @@ public class ExpenseController : BaseController
         List<Category> _categories = _categoryService.GetAll();
         Category? category;
 
-        _expenses = _filters.Count > 0 ?
-            _service.FilterByCategories([.. _filters.Select(c => c.Id)]) :
-            _service.GetAllReversed();
+        _expenses = _service.ApplyFilters(
+            [.. _filterState.Categories.Select(c => c.Id)],
+            _filterState.From,
+            _filterState.To
+        );
 
         List<string> data = [.. _expenses.Select(p => {
             category = _categories.FirstOrDefault(c => c.Id == p.CategoryId);
@@ -55,14 +58,22 @@ public class ExpenseController : BaseController
             "Pulsa [L] para limpiar los filtros"
         ];
 
-        if (_filters.Count > 0)
+        List<string> activeFiltersInfo = ["Filtros actuales"];
+
+        if (_filterState.Categories.Count > 0)
         {
-            _menu.Tips = [
-                "Filtros actuales",
-                .. _filters.Select(c => $"- Nombre: {c.Name}"),
-                "",
-                .. _menu.Tips
-            ];
+            // activeFiltersInfo.Add($"- Categorías: {_filterState.Categories.Count} seleccionadas");
+            activeFiltersInfo.Add($"- Categorías: {string.Join(", ", _filterState.Categories.Select(c => c .Name))}");
+        }
+
+        if (_filterState.From.HasValue || _filterState.To.HasValue)
+        {
+            activeFiltersInfo.Add($"- Fechas: {_filterState.From?.ToShortDateString() ?? "*"} hasta {_filterState.To?.ToShortDateString() ?? "*"}");
+        }
+
+        if (_filterState.IsActive)
+        {
+            _menu.Tips = [.. activeFiltersInfo, "", .. _menu.Tips];
         }
 
         return base.Execute();
@@ -86,19 +97,13 @@ public class ExpenseController : BaseController
 
         if (specialKey == SpecialKeys.SetFilters)
         {
-            bool filtersLoop = true;
-
-            while (filtersLoop)
-            {
-                filtersLoop = SetFilters();
-            }
-
+            SetFilters();
             return true;
         }
 
         if (specialKey == SpecialKeys.ClearFilters)
         {
-            _filters = [];
+            _filterState.Clear();
             return true;
         }
 
@@ -239,6 +244,7 @@ public class ExpenseController : BaseController
 
     private bool SetFilters()
     {
+        // Mostrar filtros actuales ; hay que colocarle Tips
         int choice = _expenseFiltersMenu.Show();
 
         switch (choice)
@@ -249,7 +255,7 @@ public class ExpenseController : BaseController
                 SetCategoriesFilters();
                 break;
             case 1:
-                throw new NotImplementedException();
+                SetDateFilters();
                 break;
         }
 
@@ -263,12 +269,12 @@ public class ExpenseController : BaseController
 
         while (filtersLoop)
         {
-            if (_filters.Count > 0)
+            if (_filterState.Categories.Count > 0)
             {
                 tips = new(
                     [
                         "Filtros actuales",
-                        .. _filters.Select(c => $"- Nombre: {c.Name}"), 
+                        .. _filterState.Categories.Select(c => $"- Nombre: {c.Name}"), 
                         "", 
                         "Presiona [ESC] para regresar"
                     ]
@@ -286,13 +292,13 @@ public class ExpenseController : BaseController
                 break;
             }
 
-            if (_filters.FirstOrDefault(c => c.Id == category.Id) != null)
+            if (_filterState.Categories.FirstOrDefault(c => c.Id == category.Id) != null)
             {
-                _filters = [.. _filters.Where(c => c.Id != category.Id)];
+                _filterState.Categories = [.. _filterState.Categories.Where(c => c.Id != category.Id)];
                 continue;
             }
 
-            _filters.Add(category);
+            _filterState.Categories.Add(category);
         }
 
         return true;
@@ -300,7 +306,34 @@ public class ExpenseController : BaseController
 
     private bool SetDateFilters()
     {
-        throw new NotImplementedException();
+        int choice = _dateFiltersMenu.Show();
+
+        DateTime now = DateTime.Now;
+
+        switch (choice)
+        {
+            case -1:
+                return false;
+            case 0:
+                // Este mes
+                _filterState.From = new DateTime(now.Year, now.Month, 1);
+                _filterState.To = _filterState.From.Value.AddMonths(1).AddDays(-1);
+                break;
+            case 1: 
+                // Mes pasado 
+                var lastMonth = now.AddMonths(-1);
+                _filterState.From = new DateTime(lastMonth.Year, lastMonth.Month, 1);
+                _filterState.To = _filterState.From.Value.AddMonths(1).AddDays(-1);
+                break;
+            case 2:
+                // Fecha especifica
+                Console.WriteLine();
+                _filterState.From = PromptDate("Fecha Inicio (dd/MM/yyyy)", true);
+                _filterState.To = PromptDate("Fecha Fin (dd/MM/yyyy)", true);
+                break;
+        }
+
+        return true;
     }
 
     private Category? SelectCategory(string[]? tips = null)
@@ -359,23 +392,24 @@ public class ExpenseController : BaseController
     }
 
     // Helper para pedir fechas sin que explote la app
-    private DateTime? PromptDate(string label)
+    private DateTime? PromptDate(string label, bool allowEmpty)
     {
-        Console.Write($"\t{label} (Enter para omitir): ");
-        string input = Console.ReadLine();
-
-        if (string.IsNullOrWhiteSpace(input))
+        while (true)
         {
-            return null;
-        }
+            string input = PromptInput(label, allowEmpty);
 
-        if (DateTime.TryParse(input, out DateTime result))
-        {
-            return result;
-        }
+            if (string.IsNullOrWhiteSpace(input) && allowEmpty)
+            {
+                return null;
+            }
+            
+            if (DateTime.TryParseExact(input, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime date))
+            {
+                return date;
+            }
 
-        Console.WriteLine("\t>> Fecha inválida. Se ignorará este campo.");
-        return null;
+            Console.WriteLine("\t>> Formato inválido. Use dd/MM/yyyy");
+        }
     }
     // ---
 }
