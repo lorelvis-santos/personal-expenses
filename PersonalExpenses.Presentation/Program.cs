@@ -18,8 +18,9 @@ CategoryController categoryController = new(categoryMenu, categorySubMenu, categ
 
 ExpenseMenu expenseMenu = new();
 ExpenseSubMenu expenseSubMenu = new();
+ExpenseFiltersMenu expenseFiltersMenu = new();
 ExpenseService expenseService = new(expenseRepository, categoryRepository);
-ExpenseController expenseController = new(expenseMenu, expenseSubMenu, categoryMenu, expenseService, categoryService);
+ExpenseController expenseController = new(expenseMenu, expenseSubMenu, expenseFiltersMenu, categoryMenu, expenseService, categoryService);
 
 HomeMenu homeMenu = new();
 HomeController homeController = new(homeMenu, categoryController, expenseController);

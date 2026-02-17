@@ -11,16 +11,18 @@ public class ExpenseController : BaseController
 {
     private readonly ExpenseMenu _menu;
     private readonly ExpenseSubMenu _subMenu;
+    private readonly ExpenseFiltersMenu _expenseFiltersMenu;
     private readonly CategoryMenu _categoryMenu;
     private readonly ExpenseService _service;
     private readonly CategoryService _categoryService;
     private List<Category> _filters = [];
     private List<Expense> _expenses;
 
-    public ExpenseController(ExpenseMenu menu, ExpenseSubMenu subMenu, CategoryMenu categoryMenu, ExpenseService service, CategoryService categoryService) : base(menu)
+    public ExpenseController(ExpenseMenu menu, ExpenseSubMenu subMenu, ExpenseFiltersMenu expenseFiltersMenu, CategoryMenu categoryMenu, ExpenseService service, CategoryService categoryService) : base(menu)
     {
         _menu = menu;
         _categoryMenu = categoryMenu;
+        _expenseFiltersMenu = expenseFiltersMenu;
         _subMenu = subMenu;
         _service = service;
         _categoryService = categoryService;
@@ -82,7 +84,13 @@ public class ExpenseController : BaseController
 
         if (specialKey == SpecialKeys.SetFilters)
         {
-            SetFilters();
+            bool filtersLoop = true;
+
+            while (filtersLoop)
+            {
+                filtersLoop = SetFilters();
+            }
+
             return true;
         }
 
@@ -228,6 +236,24 @@ public class ExpenseController : BaseController
     }
 
     private bool SetFilters()
+    {
+        int choice = _expenseFiltersMenu.Show();
+
+        switch (choice)
+        {
+            case -1:
+                return false;
+            case 0:
+                SetCategoriesFilters();
+                break;
+            case 1:
+                break;
+        }
+
+        return true;
+    }
+
+    private bool SetCategoriesFilters()
     {
         bool filtersLoop = true;
         List<string>? tips = null;
