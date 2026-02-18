@@ -347,7 +347,7 @@ public class ExpenseController : BaseController
 
         // Mostramos las categorias con paginacion
         List<string> data = [.. categories.Select(c => {
-            decimal? remaining = _categoryService.GetReimainingBudget(c.Id);
+            decimal? remaining = _categoryService.GetReimainingBudgetThisMonth(c.Id);
             string remainingText = remaining > 0 ? $"Restante: RD{remaining:C2}" : $"ALERTA: Sobregirado por RD{remaining * -1:C2}";
             return $"Nombre: {c.Name} | Presupuesto: RD{c.Budget:C2} | {remainingText}";
         })];

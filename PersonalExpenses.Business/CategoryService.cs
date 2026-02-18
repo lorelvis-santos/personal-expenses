@@ -14,21 +14,11 @@ public class CategoryService
         _expenseRepo = expenseRepo;
     }
 
-    /*
-        To do:
-        1. Agregar categoria
-            - Validar que no existan nombres duplicados
-        2. Editar categoria
-            - Validar que no existan nombres duplicados
-        3. Eliminar categoria
-            - No permitir eliminar una categoria que tenga gastos asociados
-    */
-
     public List<Category> GetAll() => _repo.GetAll();
     public Category? GetById(string id) => _repo.GetById(id);
     public bool ExistsByName(string name) => _repo.GetByName(name) != null;
 
-    public decimal? GetReimainingBudget(string id)
+    public decimal? GetReimainingBudgetThisMonth(string id)
     {
         Category? category = _repo.GetById(id);
 
@@ -37,7 +27,7 @@ public class CategoryService
             return null;
         }
 
-        decimal totalExpenses = _expenseRepo.GetAll().Where(c => c.CategoryId == id).Sum(c => c.Amount);
+        decimal totalExpenses = _expenseRepo.GetAll().Where(e => e.CategoryId == id && e.Date.Month == DateTime.Now.Month).Sum(c => c.Amount);
 
         return category.Budget - totalExpenses;
     }

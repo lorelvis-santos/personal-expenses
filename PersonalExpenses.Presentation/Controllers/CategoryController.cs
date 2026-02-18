@@ -26,7 +26,7 @@ public class CategoryController : BaseController
         _categories = _service.GetAll();
 
         List<string> data = [.. _categories.Select(c => {
-            decimal? remaining = _service.GetReimainingBudget(c.Id);
+            decimal? remaining = _service.GetReimainingBudgetThisMonth(c.Id);
             string remainingText;
 
             if (remaining > 0)
