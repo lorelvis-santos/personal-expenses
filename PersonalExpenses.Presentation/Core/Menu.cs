@@ -125,10 +125,10 @@ public static class Menu
                         break;
                     return (int)SpecialKeys.Insert;
 
-                case ConsoleKey.E: // Aplicar cambios / guardar
+                case ConsoleKey.E: // Exportar
                     if (!specialKeys)
                         break;
-                    return (int)SpecialKeys.Save;
+                    return (int)SpecialKeys.Export;
 
                 case ConsoleKey.F: // Aplicar filtros
                     if (!specialKeys)

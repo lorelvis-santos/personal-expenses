@@ -6,11 +6,13 @@ public class HomeController : BaseController
 {
     private readonly CategoryController _categoryController;
     private readonly ExpenseController _expenseController;
+    private readonly ReportController _reportController;
 
-    public HomeController(HomeMenu homeMenu, CategoryController categoryController, ExpenseController expenseController) : base(homeMenu)
+    public HomeController(HomeMenu homeMenu, CategoryController categoryController, ExpenseController expenseController, ReportController reportController) : base(homeMenu)
     {
         _categoryController = categoryController;
         _expenseController = expenseController;
+        _reportController = reportController;
     }
 
     protected override bool HandleChoice(int choice)
@@ -51,6 +53,15 @@ public class HomeController : BaseController
                 while (expenseLoop)
                 {
                     expenseLoop = _expenseController.Execute();
+                }
+
+                break;
+            case 2:
+                bool reportLoop = true;
+
+                while (reportLoop)
+                {
+                    reportLoop = _reportController.Execute();
                 }
 
                 break;

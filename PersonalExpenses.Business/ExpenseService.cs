@@ -48,6 +48,102 @@ public class ExpenseService
         return query;
     }
 
+    // 1. Para la VISTA GENERAL (Consola)
+    // Retorna: (Total, Porcentajes por Categoría, Totales por Mes, Alertas)
+    public (
+        decimal TotalGeneral, 
+        Dictionary<string, (decimal Total, double Percentage)> ByCategory, 
+        Dictionary<string, decimal> ByMonth, List<string> BudgetAlerts
+    ) GetGeneralSummary()
+    {
+        var expenses = GetAll();
+        var categories = _categoryRepo.GetAll();
+
+        decimal totalGeneral = expenses.Sum(e => e.Amount);
+        
+        // Agrupación por Categoría
+        var byCategory = expenses
+            .GroupBy(e => e.CategoryId)
+            .ToDictionary(
+                g => categories.FirstOrDefault(c => c.Id == g.Key)?.Name ?? "Desconocido",
+                g => {
+                    decimal catTotal = g.Sum(e => e.Amount);
+                    // Evitar división por cero
+                    double percentage = totalGeneral > 0 ? (double)(catTotal / totalGeneral * 100) : 0;
+                    return (catTotal, percentage);
+                }
+            );
+
+        // Agrupación por Mes/Año
+        var byMonth = expenses
+            .GroupBy(e => e.Date.ToString("yyyy-MM")) // Clave ej: "2026-02"
+            .OrderByDescending(g => g.Key)
+            .ToDictionary(g => g.Key, g => g.Sum(e => e.Amount));
+
+        // Alertas de Presupuesto (Req. 6)
+        var alerts = new List<string>();
+        foreach (var cat in categories)
+        {
+            // Sumamos gastos de esta categoría
+            decimal spent = expenses.Where(e => e.CategoryId == cat.Id && e.Date.Month == DateTime.Now.Month).Sum(e => e.Amount);
+            if (spent > cat.Budget)
+            {
+                alerts.Add($"ALERTA: '{cat.Name}' excedió su presupuesto ({spent:C2} / {cat.Budget:C2})");
+            }
+        }
+
+        return (totalGeneral, byCategory, byMonth, alerts);
+    }
+
+    // 2. Para EXPORTAR (JSON)
+    public (bool Success, string Message) ExportMonthlyReport(int year, int month)
+    {
+        if (year < 2000 || year > DateTime.Now.Year)
+        {
+            return (false, "Año inválido, debe de ser entre el 2000 y el actual.");
+        }
+
+        if (month < 1 || month > 12)
+        {
+            return (false, "Mes inválido.");
+        }
+
+        var expenses = GetAll()
+            .Where(e => e.Date.Year == year && e.Date.Month == month)
+            .ToList();
+
+        if (!expenses.Any())
+        {
+            return (false, "No hay gastos en el mes seleccionado.");
+        }
+
+        // Construimos el objeto del reporte de forma anónima
+        var report = new
+        {
+            GeneratedDate = DateTime.Now,           // FechaGeneracion
+            Period = $"{month}/{year}",             // Periodo
+            MonthlyTotal = expenses.Sum(e => e.Amount), // TotalMes
+            TransactionCount = expenses.Count,      // CantidadTransacciones
+            CategoryBreakdown = expenses            // DetallePorCategoria
+                .GroupBy(e => e.CategoryId)
+                .Select(g => new {
+                    Category = _categoryRepo.GetById(g.Key)?.Name ?? "Desconocida", // Categoria
+                    Total = g.Sum(e => e.Amount)
+                })
+                .ToList()
+        };
+
+        string fileName = $"summary_{year}_{month:00}.json";
+        
+        // Usamos el método puente del repositorio
+        if (_repo.SaveReport(report, fileName))
+        {
+            return (true, $"Reporte exportado exitosamente: {fileName}");
+        }
+        
+        return (false, "Error al escribir el archivo.");
+    }
+
     public (
         decimal Total,
         Dictionary<string, decimal> ByCategory,

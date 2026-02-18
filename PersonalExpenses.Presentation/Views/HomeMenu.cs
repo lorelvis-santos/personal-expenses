@@ -10,7 +10,8 @@ public class HomeMenu : IView
             "Gestor de Gastos Personales",
             [
                 "Administrar categorías",
-                "Administrar gastos"
+                "Administrar gastos",
+                "Ver resumen y reportes"
             ]
         );
     }

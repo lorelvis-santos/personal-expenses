@@ -5,5 +5,6 @@ public enum SpecialKeys
     Insert = 100,
     Save,
     SetFilters,
-    ClearFilters
+    ClearFilters,
+    Export
 }

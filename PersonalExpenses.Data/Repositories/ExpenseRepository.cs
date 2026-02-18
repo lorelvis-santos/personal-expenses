@@ -14,4 +14,9 @@ public class ExpenseRepository : BaseRepository<Expense>
     {
         return GetAll().Any(expense => expense.CategoryId == categoryId);
     }
+
+    public bool SaveReport<T>(T reportData, string fileName)
+    {
+        return _context.SaveObject(fileName, reportData);
+    }
 }

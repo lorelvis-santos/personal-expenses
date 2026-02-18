@@ -45,4 +45,26 @@ public class JsonFileContext : IFileContext
             return false;
         }
     }
+
+    public bool SaveObject<T>(string fileName, T data)
+    {
+        string json = JsonSerializer.Serialize(data, _options);
+
+        string? directory = Path.GetDirectoryName(fileName);
+        if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
+        try
+        {
+            File.WriteAllText(fileName, json);
+            return true;
+        } 
+        catch(Exception ex)
+        {
+            Console.WriteLine($"JSONFileContext@SaveObject: {ex.Message}");
+            return false;
+        }
+    }
 }
